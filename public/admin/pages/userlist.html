@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--验证用户是否已经登陆-->
+	<script src="/admin/chk_logined.html"></script>
+    <title>学校食堂安全管理系统v1.0</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="../vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="../dist/css/extendcss.css"/>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]
+	-->
+	<script src="../js/jquery-2.1.0.js"></script>
+	<script src="../js/jquery.tmpl.min.js"></script>
+</head>
+
+<body>
+    <div id="wrapper">
+		<script src="./menu.js"></script>
+        <div id="page-wrapper">
+           <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading row">
+                           	<div class="col-sm-6"> 当前位置: 系统管理 >用户管理</div>                           	
+                           	<div class="col-sm-6">
+                           		<div class="optiondiv">
+                           			<button type="button" class="btn btn-primary btn-sm" id="btncheck">审核</button>&nbsp;
+                           			<button type="button" class="btn btn-primary btn-sm" id="btncreate">新增</button>&nbsp;
+                           			<button type="button" class="btn btn-primary btn-sm" id="btnedit">编辑</button>&nbsp;
+                           			<button type="button" class="btn btn-primary btn-sm" id="btndelete">删除</button>
+                           		</div>
+                           	</div>
+                        </div>
+                        <!-- /.panel-heading -->
+  						<div class="row panel-body">
+                           	<form class="form-inline" role="form">
+							  <div class="form-group">
+							   <div class="input-group">
+							      <div class="input-group-addon">所在部门</div>
+							       <select class="form-control" id="search_department">
+							       		<option>全部</option>
+							       		<option>教学部</option>
+							            <option>财务部</option>
+							            <option>市场部</option>            
+							            <option>网络部</option>
+							            <option>行政部</option>
+							        </select>
+							    </div>
+							  </div>
+							  <div class="form-group">
+							   <div class="input-group">
+							      <div class="input-group-addon">角色组</div>
+							       <select class="form-control" id="search_role">
+							            <option>全部</option>
+							            <option>超级管理员</option>
+							            <option>普通用户</option>
+							        </select>
+							    </div>
+							  </div>
+							  <div class="form-group">
+							    <div class="input-group">
+							      <div class="input-group-addon">登录账号：</div>
+							      <input class="form-control" id="search_username" type="text" placeholder="登录账号">
+							    </div>
+							  </div>
+							  <button type="button" class="btn btn-default" id="search_btn">查询</button>
+							</form>
+                        </div>
+                        <div class="panel-body">
+                        	
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th class="center"><input type="checkbox" id="cball"/></th>
+                                        <th>用户账号</th>
+                                        <th>用户名称</th>
+                                        <th>所属角色</th>
+                                        <th>所属部门</th>
+                                        <th>是否启用</th>
+                                        <th>排序</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+<script>
+	$(function(){
+		//页面加载成功时，执行 showadmin()函数，用于显示出所有管理员数据
+		showadmin(1);
+	});
+	
+	//showamdin函数的作用，显示出管理员列表
+	function showadmin(page){
+		//原生的数据拼接，显示出管理员列表
+		$.get('/admin/showadmin.html?page='+page,function(data){
+			var txt='';
+			//从服务器获得数据以后进行循环遍历拼接数据
+			for(var i=0;i<data.length-1;i++){
+				txt+='<tr class="odd gradeX">';
+				txt+='<td class="center"><input type="checkbox" value="'+data[i]._id+'" name="choose"/></td>';
+				txt+='<td>'+data[i].username+'</td>';
+				txt+='<td>'+data[i].truename+'</td>';
+				txt+='<td>'+data[i].role+'</td>';
+				txt+='<td class="center">'+data[i].department+'</td>';
+				txt+='<td class="center">';
+				if(data[i].flag==1){
+					txt+='<input type="checkbox" checked="checked" disabled="disabled"/>';
+				}else{
+					txt+='<input type="checkbox" disabled="disabled"/>';
+				}
+				txt+='</td>';
+				txt+='<td>'+data[i].sort+'</td>';
+				txt+='<td></td>';
+				txt+='</tr>';
+			}
+			$('#dataTables-example tbody').html(txt);
+			
+			//输出页码表
+			var pagecount=data[i].pagecount;
+			var txt='';
+			for(var j=1;j<=pagecount;j++){
+				//判断是否是当前页，当前页则添加 active 样式
+				if(j==page){
+					txt+='<li class="paginate_button active" aria-controls="dataTables-example" tabindex="0">';
+				}else{
+					txt+='<li class="paginate_button" aria-controls="dataTables-example" tabindex="0">';
+				}
+				txt+='<a href="javascript:showadmin('+j+')">'+j+'</a>';
+				txt+='</li>';
+			}
+			$('.pagination').html(txt);
+		});
+	}
+	
+	//点击删除按钮时执行
+	$('#btndelete').click(function(){
+		var choose=document.getElementsByName('choose');
+		//console.log(choose);
+		var ids=[];
+		//将被选中的数据项的ID构造成数组
+		for(var i=0;i<choose.length;i++){
+			if(choose[i].checked){
+				ids.push(choose[i].value);
+			}
+		}
+		
+		//将被删除的ID组合发送到服务器进行删除操作
+		$.post('/admin/del.html',{"ids":ids},function(data){
+			if(data==1){
+				showadmin(1); //如果返回值是1表示删除成功，刷新页面列表
+			}
+		});
+	});
+	
+	//点击查询按钮时，提交查询数据
+	$('#search_btn').click(function(){
+		var department=$('#search_department').val();
+		var role=$('#search_role').val();
+		var username=$('#search_username').val();
+		
+		$.post('/admin/admin_search.html',{
+			"department":department,
+			"role":role,
+			"username":username
+		},function(data){
+			var txt='';
+			//从服务器获得数据以后进行循环遍历拼接数据
+			for(var i=0;i<data.length;i++){
+				txt+='<tr class="odd gradeX">';
+				txt+='<td class="center"><input type="checkbox" value="'+data[i]._id+'" name="choose"/></td>';
+				txt+='<td>'+data[i].username+'</td>';
+				txt+='<td>'+data[i].truename+'</td>';
+				txt+='<td>'+data[i].role+'</td>';
+				txt+='<td class="center">'+data[i].department+'</td>';
+				txt+='<td class="center">';
+				if(data[i].flag==1){
+					txt+='<input type="checkbox" checked="checked" disabled="disabled"/>';
+				}else{
+					txt+='<input type="checkbox" disabled="disabled"/>';
+				}
+				txt+='</td>';
+				txt+='<td>'+data[i].sort+'</td>';
+				txt+='<td></td>';
+				txt+='</tr>';
+			}
+			$('#dataTables-example tbody').html(txt);
+			
+			$('.pagination').html('');
+		});
+	});
+</script>
+<div class="row">
+	<div class="col-sm-6">
+		<div class="dataTables_info" id="dataTables-example_info" role="status" aria-live="polite">显示第 1 至 5 项记录，共 5 项</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="dataTables_paginate paging_simple_numbers" id="dataTables-example_paginate">
+			<ul class="pagination">
+			</ul>
+		</div>
+	</div>
+</div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
+
+    <script src="../dist/js/sb-admin-2.js"></script>
+    <script src="../dist/js/sea.js"></script>
+    <script>
+		$("#cball").click(function(){
+			$("input[type='checkbox']").not(this).prop("checked",$(this).prop("checked"));
+		});
+
+		seajs.config({
+		  alias: {
+		    "jquery": "jquery-1.10.2.js"
+		  }
+		});
+
+		seajs.use(['jquery', 'dialog-plus'], function ($, dialog) {
+			$('#btncreate').on('click', function () {
+				//构造表单
+				jQuery.get("userform.html",function(data){
+    				var d = dialog({
+						title: '创建用户',
+						content:data,
+						width:500,
+						okValue: '确 定',
+						ok: function () {
+							//点击 "确定" 按钮后，收集并处理用户填写的数据
+							var username=$('#tbunitname').val();
+							var password=$('#tbpassword').val();
+							var truename=$('#tbaddress').val();
+							var role=$('#tbrole').val();
+							var department=$('#tbdepartment').val();
+							var sort=$('#tbsort').val();
+							var flag=$('#tbflag').prop('checked') ? '1':'0';
+							
+							//收集好数据后，构造 post请求向服务器发送数据，完成新增管理员功能
+							$.post('/admin/admin_new.html',{
+								"username":username,
+								"password":password,
+								"truename":truename,
+								"role":role,
+								"department":department,
+								"sort":sort,
+								"flag":flag
+							},function(data){
+								if(data==1){
+									//服务器返回状态为1 表示新增成功， 执行showadmin()重新显示页面数据
+									showadmin(1);
+								}else{
+									console.log(data); //未新增成功则输出错误提示
+								}
+							});
+						},
+						cancelValue: '取消',
+						cancel: function () {}
+					});
+		
+					d.showModal();
+    			});				
+			});
+			
+			$('#btnedit').on('click', function () {
+				//构造表单
+				jQuery.get("userform.html",function(data){
+    				var d = dialog({
+						title: '编辑用户',
+						content:data,
+						width:500,
+						okValue: '确 定',
+						ok: function () {
+							//保存新数据的代码写在这里
+							var id=$('#tbid').val();
+							var username=$('#tbunitname').val();
+							var password=$('#tbpassword').val();
+							var truename=$('#tbaddress').val();
+							var role=$('#tbrole').val();
+							var department=$('#tbdepartment').val();
+							var sort=$('#tbsort').val();
+							var flag=$('#tbflag').prop('checked') ? '1':'0';
+							
+							$.post('/admin/admin_update.html',{
+								"id":id,
+								"username":username,
+								"password":password,
+								"truename":truename,
+								"role":role,
+								"department":department,
+								"sort":sort,
+								"flag":flag
+							},function(data){
+								if(data==1){
+									showadmin(1);
+								}
+							});
+						},
+						cancelValue: '取消',
+						cancel: function () {}
+					});
+		
+					d.showModal();
+					
+					//读取旧的数据的代码写在这里
+					//获取到被修改的一条数据的id值
+					var choose=document.getElementsByName('choose');
+					for(var i in choose){
+						if(choose[i].checked){
+							var id=choose[i].value;
+							break;
+						}
+					}
+					
+					//如果有id值，表示已经有数据被选择用于修改
+					if(id){
+						$.get('/admin/get_admin.html?id='+id,function(data){
+							//console.log(data);
+							$('#tbid').val(id);
+							$('#tbunitname').val(data.username);
+							$('#tbpassword').val(data.password);
+							$('#tbaddress').val(data.truename);
+							$('#tbrole').val(data.role);
+							$('#tbdepartment').val(data.department);
+							$('#tbsort').val(data.sort);
+							if(data.flag){
+								$('#tbflag').prop('checked',true);
+							}
+						});
+					}
+    			});
+			});
+			
+		});
+</script>
+
+
+
+</body>
+
+</html>
